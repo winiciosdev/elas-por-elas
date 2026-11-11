@@ -117,6 +117,17 @@ Copie o token retornado e envie `Authorization: Bearer SEU_TOKEN` para rotas aut
 - `DELETE /api/v1/profissionais/me` (desativa perfil)
 - `POST /api/v1/profissionais/{id}/verificacao` (ADMIN)
 
+No cadastro/atualização de perfil profissional, o campo `unidadeIds` é opcional e permite vincular a profissional a várias unidades de apoio:
+```json
+{
+  "tipoServicoId": "UUID-DO-TIPO",
+  "registroProfissional": "CRP-00000",
+  "biografia": "Atendimento psicológico voluntário.",
+  "cidadeUf": "Recife, PE",
+  "unidadeIds": ["UUID-DA-UNIDADE-1", "UUID-DA-UNIDADE-2"]
+}
+```
+
 ### Meu Apoio
 - `GET /api/v1/meu-apoio`
 - `POST /api/v1/meu-apoio`
@@ -155,4 +166,4 @@ Saia com `\q` e faça login novamente para obter um token com a role atualizada.
 - `GET /api/v1/health` verifica apenas que a aplicação responde; não é uma verificação profunda de dependências.
 
 ## Modelo normalizado atualizado
-A migration cria também `endereco` (CEP, logradouro, bairro, cidade/UF e coordenadas), `profissional_servico`, colunas de estado de moderação e as chaves estrangeiras opcionais/obrigatórias previstas no modelo. O MVP preserva temporariamente alguns campos antigos de cidade/endereço utilizados pelos endpoints existentes para facilitar a transição; use `endereco_id` como referência normalizada nos novos fluxos. `MEU_APOIO` tem CHECK para garantir que apenas um alvo seja preenchido.
+A migration cria também `endereco` (CEP, logradouro, bairro, cidade/UF e coordenadas), `profissional_servico`, `profissional_unidade`, colunas de estado de moderação e as chaves estrangeiras opcionais/obrigatórias previstas no modelo. O MVP preserva temporariamente alguns campos antigos de cidade/endereço utilizados pelos endpoints existentes para facilitar a transição; use `endereco_id` como referência normalizada nos novos fluxos. `MEU_APOIO` tem CHECK para garantir que apenas um alvo seja preenchido.
