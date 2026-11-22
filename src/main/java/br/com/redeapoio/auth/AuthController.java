@@ -24,6 +24,13 @@ public class AuthController {
         return service.cadastrar(request);
     }
 
+    @PostMapping("/cadastro-voluntaria")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Cadastrar voluntária", description = "Cria a conta e o perfil profissional (em análise) em uma única operação e retorna o token de acesso.")
+    public AuthDtos.CadastroVoluntariaResponse cadastrarVoluntaria(@Valid @RequestBody AuthDtos.CadastroVoluntariaRequest request) {
+        return service.cadastrarVoluntaria(request);
+    }
+
     @PostMapping("/login")
     @Operation(summary = "Fazer login", description = "Valida e-mail e senha e retorna um token JWT para uso nas rotas autenticadas.")
     public AuthDtos.AuthResponse login(@Valid @RequestBody AuthDtos.LoginRequest request) {

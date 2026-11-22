@@ -110,12 +110,23 @@ Copie o token retornado e envie `Authorization: Bearer SEU_TOKEN` para rotas aut
 - `DELETE /api/v1/tipos-servico/{id}` (ADMIN)
 
 ### Profissionais voluntárias
-- `GET /api/v1/profissionais?cidadeUf=Recife`
+- `GET /api/v1/profissionais?cidadeUf=Recife` (somente perfis ativos e verificados)
 - `GET /api/v1/profissionais/{id}`
+- `GET /api/v1/profissionais/me` (perfil da usuária logada, inclusive em análise ou em pausa)
 - `POST /api/v1/profissionais/me`
 - `PUT /api/v1/profissionais/me`
+- `PATCH /api/v1/profissionais/me/disponibilidade` (`{"disponivel": true|false}`)
 - `DELETE /api/v1/profissionais/me` (desativa perfil)
 - `POST /api/v1/profissionais/{id}/verificacao` (ADMIN)
+- `POST /api/v1/auth/cadastro-voluntaria`: cria a conta (role `VOLUNTARIA`) e o perfil em análise numa única chamada, usado pelo front-end.
+
+O perfil só aparece nas listagens públicas depois da verificação por um ADMIN.
+
+### Integração com o front-end
+- CORS liberado para `CORS_ALLOWED_ORIGINS` (padrão: `http://localhost:5500,http://127.0.0.1:5500`, a porta do Live Server).
+- `JWT_SECRET` não tem mais valor padrão: a API não sobe sem ele.
+- A migration `V3__integracao_frontend.sql` adiciona `codigo` aos tipos de serviço (`PSICOLOGICO`, `JURIDICO`, `ASSISTENCIA_SOCIAL`, `SAUDE_MULHER`, `VIOLENCIA_DOMESTICA`, `ORIENTACAO_PROFISSIONAL`, `APOIO_FINANCEIRO`, `DELEGACIA`, `OUTROS`) e novos campos em profissionais e unidades (categoria, horário, modalidades, latitude/longitude).
+- Chat, rodas, moderação e materiais do front continuam simulados (sem endpoints).
 
 No cadastro/atualização de perfil profissional, o campo `unidadeIds` é opcional e permite vincular a profissional a várias unidades de apoio:
 ```json

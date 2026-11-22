@@ -45,16 +45,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | IllegalArgumentException ex) {
+            if (ehLeituraPublica(request)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"status\":401,\"error\":\"Token JWT inválido ou expirado\"}");
             return;
         } catch (org.springframework.security.core.userdetails.UsernameNotFoundException ex) {
+            if (ehLeituraPublica(request)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"status\":401,\"error\":\"Usuária não encontrada\"}");
             return;
         }
         filterChain.doFilter(request, response);
+    }
+
+    // Um token vencido não deve impedir a consulta pública (busca, mapa, voluntárias).
+    private boolean ehLeituraPublica(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return "GET".equals(request.getMethod())
+            && !path.equals("/api/v1/profissionais/me")
+            && (path.startsWith("/api/v1/unidades") || path.startsWith("/api/v1/tipos-servico")
+                || path.startsWith("/api/v1/profissionais"));
     }
 }

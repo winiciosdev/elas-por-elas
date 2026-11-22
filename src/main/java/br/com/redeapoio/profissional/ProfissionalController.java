@@ -26,6 +26,18 @@ public class ProfissionalController {
         return service.listar(cidadeUf);
     }
 
+    @GetMapping("/me")
+    @Operation(summary = "Consultar perfil profissional da usuária logada", description = "Retorna o perfil profissional da usuária autenticada, inclusive em análise ou em pausa.")
+    public ProfissionalDtos.Response meu(Authentication auth) {
+        return service.meu(auth.getName());
+    }
+
+    @PatchMapping("/me/disponibilidade")
+    @Operation(summary = "Pausar ou reativar o perfil", description = "Define se o perfil aparece na busca pública (aceitando novos contatos) ou fica em pausa.")
+    public ProfissionalDtos.Response disponibilidade(@Valid @RequestBody ProfissionalDtos.DisponibilidadeRequest r, Authentication auth) {
+        return service.atualizarDisponibilidade(auth.getName(), r.disponivel());
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Buscar profissional por ID", description = "Retorna um perfil de profissional ativo pelo identificador.")
     public ProfissionalDtos.Response buscar(@PathVariable UUID id) {
