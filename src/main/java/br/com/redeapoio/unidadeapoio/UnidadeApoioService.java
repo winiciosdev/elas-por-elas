@@ -1,5 +1,6 @@
 package br.com.redeapoio.unidadeapoio;
 
+import br.com.redeapoio.common.Csv;
 import br.com.redeapoio.common.ResourceNotFoundException;
 import br.com.redeapoio.tiposervico.TipoServico;
 import br.com.redeapoio.tiposervico.TipoServicoRepository;
@@ -43,15 +44,15 @@ public class UnidadeApoioService {
 
     @Transactional
     public UnidadeApoioDtos.Response criar(UnidadeApoioDtos.Request request) {
-        var entity = new UnidadeApoio(request.nome(), request.descricao(), request.cidade(), request.bairro(), request.endereco(), request.telefone(), request.site());
-        entity.atualizar(request.nome(), request.descricao(), request.cidade(), request.bairro(), request.endereco(), request.telefone(), request.site(), resolver(request.tipoServicoIds()));
+        var entity = new UnidadeApoio(request, resolver(request.tipoServicoIds()));
+        entity.verificar();
         return dto(repository.save(entity));
     }
 
     @Transactional
     public UnidadeApoioDtos.Response atualizar(UUID id, UnidadeApoioDtos.Request request) {
         var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada."));
-        entity.atualizar(request.nome(), request.descricao(), request.cidade(), request.bairro(), request.endereco(), request.telefone(), request.site(), resolver(request.tipoServicoIds()));
+        entity.atualizar(request, resolver(request.tipoServicoIds()));
         return dto(repository.save(entity));
     }
 
@@ -84,6 +85,8 @@ public class UnidadeApoioService {
     private UnidadeApoioDtos.Response dto(UnidadeApoio entity) {
         return new UnidadeApoioDtos.Response(entity.getId(), entity.getNome(), entity.getDescricao(), entity.getCidade(), entity.getBairro(),
             entity.getEndereco(), entity.getTelefone(), entity.getSite(), entity.isAtiva(), entity.getVerificadoEm(), entity.getCriadoEm(),
-            entity.getServicos().stream().map(s -> new UnidadeApoioDtos.Servico(s.getId(), s.getNome())).toList());
+            entity.getServicos().stream().map(s -> new UnidadeApoioDtos.Servico(s.getId(), s.getCodigo(), s.getNome())).toList(),
+            entity.getCategoria(), entity.getHorarioFuncionamento(), Csv.dividir(entity.getModalidades()),
+            entity.getLatitude(), entity.getLongitude());
     }
 }

@@ -1,5 +1,7 @@
 package br.com.redeapoio.auth;
 
+import br.com.redeapoio.profissional.ProfissionalDtos;
+import br.com.redeapoio.profissional.ProfissionalService;
 import br.com.redeapoio.usuaria.Usuaria;
 import br.com.redeapoio.usuaria.UsuariaRepository;
 import br.com.redeapoio.security.JwtService;
@@ -16,15 +18,18 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final ProfissionalService profissionais;
     private final long expirationMinutes;
 
     public AuthService(UsuariaRepository repository, PasswordEncoder encoder,
                        AuthenticationManager authenticationManager, JwtService jwtService,
+                       ProfissionalService profissionais,
                        @Value("${app.jwt.expiration-minutes:60}") long expirationMinutes) {
         this.repository = repository;
         this.encoder = encoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.profissionais = profissionais;
         this.expirationMinutes = expirationMinutes;
     }
 
@@ -38,6 +43,22 @@ public class AuthService {
         nova.setNome(request.nome().trim());
         Usuaria usuaria = repository.save(nova);
         return response(usuaria);
+    }
+
+    @Transactional
+    public AuthDtos.CadastroVoluntariaResponse cadastrarVoluntaria(AuthDtos.CadastroVoluntariaRequest request) {
+        String email = request.email().trim().toLowerCase();
+        if (repository.existsByEmailIgnoreCase(email)) {
+            throw new IllegalArgumentException("Já existe uma conta com este e-mail.");
+        }
+        Usuaria nova = new Usuaria(email, encoder.encode(request.senha()), request.cidadeUf());
+        nova.setNome(request.nome().trim());
+        nova.tornarVoluntaria();
+        Usuaria usuaria = repository.save(nova);
+        var perfil = profissionais.criarParaUsuaria(usuaria, new ProfissionalDtos.Request(null,
+            request.registroProfissional().trim(), null, request.cidadeUf(), null, request.telefone(), request.area(),
+            null, null, null, null, null, null));
+        return new AuthDtos.CadastroVoluntariaResponse(response(usuaria), perfil);
     }
 
     public AuthDtos.AuthResponse login(AuthDtos.LoginRequest request) {

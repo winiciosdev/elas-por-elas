@@ -27,13 +27,13 @@ public class TipoServicoService {
 
     @Transactional
     public TipoServicoDtos.Response criar(TipoServicoDtos.Request request) {
-        return dto(repository.save(new TipoServico(request.nome(), request.descricao())));
+        return dto(repository.save(new TipoServico(request.nome(), request.codigo(), request.descricao())));
     }
 
     @Transactional
     public TipoServicoDtos.Response atualizar(UUID id, TipoServicoDtos.Request request) {
         var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tipo de serviço não encontrado."));
-        entity.atualizar(request.nome(), request.descricao());
+        entity.atualizar(request.nome(), request.codigo(), request.descricao());
         return dto(repository.save(entity));
     }
 
@@ -46,6 +46,6 @@ public class TipoServicoService {
     }
 
     private TipoServicoDtos.Response dto(TipoServico entity) {
-        return new TipoServicoDtos.Response(entity.getId(), entity.getNome(), entity.getDescricao());
+        return new TipoServicoDtos.Response(entity.getId(), entity.getCodigo(), entity.getNome(), entity.getDescricao());
     }
 }

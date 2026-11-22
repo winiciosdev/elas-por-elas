@@ -58,7 +58,7 @@ public class MeuApoioService {
             entity.getUnidade() == null ? null : entity.getUnidade().getId(),
             entity.getUnidade() == null ? null : entity.getUnidade().getNome(),
             entity.getProfissional() == null ? null : entity.getProfissional().getId(),
-            entity.getProfissional() == null ? null : entity.getProfissional().getUsuaria().getEmail(),
+            entity.getProfissional() == null ? null : entity.getProfissional().getUsuaria().getNome(),
             entity.getCriadoEm());
     }
 }

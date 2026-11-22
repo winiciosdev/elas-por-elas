@@ -42,4 +42,5 @@ public class Usuaria {
     public String getRole() { return role; }
     public Instant getCriadoEm() { return criadoEm; }
     public void setCidadeUf(String cidadeUf) { this.cidadeUf = cidadeUf; }
+    public void tornarVoluntaria() { this.role = "VOLUNTARIA"; }
 }
